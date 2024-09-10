@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bimuma"
+version = "0.0.1"
+dependencies = [
+  "pandas",
+  "scipy",
+  "futils @ git+https://github.com/fraterenz/futils@v0.0.14",
+  "numpy>=1.21",
+]
+requires-python = ">=3.7"
+authors = [
+  {name = "Francesco Terenzi"},
+]
+description = "Small library to analyse and summarise BInary MUtation MAtrices (bimuma) in Python."
+readme = "README.md"
+license = {file = "LICENSE"}
+
+[tool.hatch.metadata]
+"allow-direct-references" = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bimuma"]
+
+[project.urls]
+"Homepage" = "https://github.com/fraterenz/bimuma"
+
+[tool.pytest.ini_options]
+addopts = [
+  "--import-mode=importlib",
+    "--doctest-modules"
+]
