@@ -1,5 +1,6 @@
 from io import StringIO
 import pytest
+import numpy as np
 import pandas as pd
 from src.bimuma.summary import (
     BinaryMutationMatrix,
@@ -11,7 +12,7 @@ from src.bimuma.summary import (
 
 def create_binary_mut() -> BinaryMutationMatrix:
     data = """PD43947h_lo0002_hum\tPD43947h_lo0003_hum\tPD43947h_lo0004_hum\tPD43947h_lo0005_hum
-10-110257574-G-A\t0\t1\t0\t0
+10-110257574-G-A\t0.5\t1\t0\t0
 10-114594383-C-T\t0\t1\t0\t0
 10-124679941-T-C\t0\t0\t0\t0
 10-12684595-G-C\t0\t0\t1\t1
@@ -20,7 +21,7 @@ def create_binary_mut() -> BinaryMutationMatrix:
 10-133335354-C-T\t0\t0\t0\t0
 10-134888630-G-A\t0\t1\t1\t1
 10-15817209-T-C\t0\t0\t1\t1
-10-1937569-G-C\t0\t0\t0\t0
+10-1937569-G-C\tNaN\t0\t0\t0
  """
     return BinaryMutationMatrix(pd.read_csv(StringIO(data), sep="\t"))
 
@@ -29,6 +30,13 @@ def test_empty_matrix():
     with pytest.raises(AssertionError):
         BinaryMutationMatrix(pd.DataFrame())
 
+
+def test_nan_0_dot_5_values():
+    binary_mut = create_binary_mut()
+    assert binary_mut.matrix.select_dtypes("int").shape == binary_mut.matrix.shape
+    assert not binary_mut.matrix.isna().any().any()
+    assert np.all(np.ones(shape=binary_mut.matrix.shape) - binary_mut.matrix.to_numpy() <= 1)
+    assert binary_mut.matrix.iloc[0, 0] == 0
 
 def test_duplicated_cells():
     binary_mut = create_binary_mut()

@@ -28,7 +28,10 @@ class NonUniqueCells(ValueError):
 class BinaryMutationMatrix:
     def __init__(self, matrix: pd.DataFrame) -> None:
         """A binary mutation matrix where rows (index) are unique mutations and
-        columns are cells."""
+        columns are cells.
+
+        Values can be either 0, 1 or 0.5 where the latter means missing data.
+        """
 
         def get_unique_quantities(quantities: List[str]) -> Set[str]:
             unique_q = set(quantities)
@@ -36,7 +39,9 @@ class BinaryMutationMatrix:
             return unique_q
 
         assert matrix.shape[0], "empty matrix"
-        self.matrix = matrix
+        self.matrix = matrix.fillna(0)
+        # this converts 0.5 to 1
+        self.matrix = self.matrix.map(int)
         try:
             self.cells = get_unique_quantities(matrix.columns.to_list())
         except AssertionError:
